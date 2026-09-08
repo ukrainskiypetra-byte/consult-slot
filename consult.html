@@ -149,12 +149,13 @@
             margin-bottom: 5px;
             color: #334155;
         }
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 15px;
+            background: #fff;
         }
         .modal {
             display: none;
@@ -191,7 +192,7 @@
             <p>Система швидкого запису на консультації до викладачів</p>
         </div>
         <div>
-            <span id="current-user-role" style="font-size: 13px; background: #4338ca; padding: 5px 10px; border-radius: 4px;">Режим: Студент</span>
+            <span id="current-user-role" style="font-size: 13px; background: #4338ca; padding: 5px 10px; border-radius: 4px;">Група: 3ІПЗс-24</span>
         </div>
     </header>
 
@@ -225,12 +226,12 @@
             <h3 style="font-size: 16px; margin-bottom: 15px; color: #1e293b;">Створити новий слот</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Дата та час</label>
-                    <input type="text" id="new-slot-time" placeholder="напр. 12 Червня, 14:00">
+                    <label>Дата проведення</label>
+                    <input type="date" id="new-slot-date" value="2026-09-10">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Викладач / Тема</label>
-                    <input type="text" id="new-slot-info" placeholder="напр. Доц. Шевченко І.В.">
+                    <label>Час та викладач</label>
+                    <input type="text" id="new-slot-info" placeholder="14:00 - 14:30 (Доц. Шевченко)">
                 </div>
             </div>
             <button class="btn" onclick="addSlot()">Додати слот у розклад</button>
@@ -247,11 +248,17 @@
         <p id="modal-slot-desc" style="margin-bottom: 15px; color: #64748b;"></p>
         <div class="form-group">
             <label>Ваше ПІБ (Студент)</label>
-            <input type="text" id="student-name-input" placeholder="Петренко Олександр">
+            <input type="text" id="student-name-input" placeholder="Введіть ПІБ" autocomplete="name">
         </div>
         <div class="form-group">
             <label>Номер групи</label>
-            <input type="text" id="student-group-input" placeholder="КН-31">
+            <select id="student-group-input">
+                <option value="3ІПЗс-24" selected>3ІПЗс-24 (Ваша група)</option>
+                <option value="КН-31">КН-31</option>
+                <option value="ПІ-41">ПІ-41</option>
+                <option value="ІТ-32">ІТ-32</option>
+                <option value="КН-32с">КН-32с</option>
+            </select>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn" style="background: #10b981; flex: 1;" onclick="confirmBooking()">Підтвердити</button>
@@ -261,11 +268,12 @@
 </div>
 
 <script>
+    // Початкові слоти на вересень 2026 року
     let slots = [
-        { id: 1, datetime: "10 Червня, 10:00 - 10:30", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
-        { id: 2, datetime: "10 Червня, 10:30 - 11:00", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
-        { id: 3, datetime: "11 Червня, 12:00 - 12:30", teacher: "Доц. Шевченко І.В.", status: "booked", bookedBy: "Іванченко Д.", group: "ПІ-42" },
-        { id: 4, datetime: "12 Червня, 14:00 - 14:30", teacher: "Ст. викл. Мельник О.П.", status: "free", bookedBy: null, group: null }
+        { id: 1, datetime: "10 Вересня 2026, 10:00 - 10:30", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
+        { id: 2, datetime: "10 Вересня 2026, 10:30 - 11:00", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
+        { id: 3, datetime: "11 Вересня 2026, 12:00 - 12:30", teacher: "Доц. Шевченко І.В.", status: "booked", bookedBy: "Іванченко Д.", group: "3ІПЗс-24" },
+        { id: 4, datetime: "12 Вересня 2026, 14:00 - 14:30", teacher: "Ст. викл. Мельник О.П.", status: "free", bookedBy: null, group: null }
     ];
 
     let selectedSlotId = null;
@@ -298,7 +306,7 @@
             container.innerHTML += `
                 <div class="slot-card">
                     <div class="slot-info">
-                        <h3>${slot.datetime}</h3>
+                        <h3><i class="fa-regular fa-clock"></i> ${slot.datetime}</h3>
                         <p><i class="fa-solid fa-chalkboard-user"></i> ${slot.teacher}</p>
                         <span class="badge free">Вільно</span>
                     </div>
@@ -366,10 +374,10 @@
 
     function confirmBooking() {
         const name = document.getElementById('student-name-input').value.trim();
-        const group = document.getElementById('student-group-input').value.trim();
+        const group = document.getElementById('student-group-input').value;
 
-        if (!name || !group) {
-            alert('Будь ласка, заповніть усі поля!');
+        if (!name) {
+            alert('Будь ласка, введіть своє ПІБ!');
             return;
         }
 
@@ -401,18 +409,23 @@
     }
 
     function addSlot() {
-        const datetime = document.getElementById('new-slot-time').value.trim();
-        const teacher = document.getElementById('new-slot-info').value.trim();
+        const dateVal = document.getElementById('new-slot-date').value;
+        const infoVal = document.getElementById('new-slot-info').value.trim();
 
-        if (!datetime || !teacher) {
-            alert('Заповніть час та ім’я викладача!');
+        if (!dateVal || !infoVal) {
+            alert('Оберіть дату та введіть час/викладача!');
             return;
         }
 
+        const dateObj = new Date(dateVal);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDate = dateObj.toLocaleDateString('uk-UA', options);
+
+        const datetime = `${formattedDate}, ${infoVal}`;
         const newId = slots.length > 0 ? Math.max(...slots.map(s => s.id)) + 1 : 1;
-        slots.push({ id: newId, datetime, teacher, status: 'free', bookedBy: null, group: null });
         
-        document.getElementById('new-slot-time').value = '';
+        slots.push({ id: newId, datetime, teacher: "Викладач за розкладом", status: 'free', bookedBy: null, group: null });
+        
         document.getElementById('new-slot-info').value = '';
         renderAll();
         alert('Новий слот успішно додано до розкладу!');
