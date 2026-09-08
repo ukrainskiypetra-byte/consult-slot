@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsultSlot - Система запису на консультації</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Lato', sans-serif;
+            color: #334155;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 650px;
+        }
+        header {
+            background: #4f46e5;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        header p {
+            font-size: 14px;
+            color: #c7d2fe;
+        }
+        .nav-tabs {
+            display: flex;
+            background: #e0e7ff;
+            padding: 0 30px;
+            gap: 10px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #4338ca;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #4f46e5;
+            background: #ffffff;
+        }
+        .content-section {
+            padding: 30px;
+            flex-grow: 1;
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .slot-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+        .slot-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .slot-info h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .slot-info p {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .badge.free { background: #dcfce7; color: #166534; }
+        .badge.booked { background: #fee2e2; color: #991b1b; }
+        
+        .btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: 'Lato', sans-serif;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #4338ca; }
+        .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        .alert.success { background: #dcfce7; color: #166534; display: block; }
+        .alert.error { background: #fee2e2; color: #991b1b; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div>
+            <h1>ConsultSlot MVP</h1>
+            <p>Система швидкого запису на консультації до викладачів</p>
+        </div>
+        <div>
+            <span id="current-user-role" style="font-size: 13px; background: #4338ca; padding: 5px 10px; border-radius: 4px;">Режим: Студент</span>
+        </div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('student-view')"><i class="fa-solid fa-calendar-days"></i> Доступні слоти</button>
+        <button class="tab-btn" onclick="switchTab('my-bookings')"><i class="fa-solid fa-user-check"></i> Мої записи</button>
+        <button class="tab-btn" onclick="switchTab('teacher-view')"><i class="fa-solid fa-chalkboard-user"></i> Панель викладача</button>
+    </div>
+
+    <!-- TAB 1: STUDENT VIEW -->
+    <div id="student-view" class="content-section active">
+        <h2>Оберіть вільний час для консультації</h2>
+        <div id="student-alert" class="alert"></div>
+        <div class="slots-grid" id="slots-container">
+            <!-- Динамічний контент -->
+        </div>
+    </div>
+
+    <!-- TAB 2: MY BOOKINGS -->
+    <div id="my-bookings" class="content-section">
+        <h2>Ваші активні записи</h2>
+        <div class="slots-grid" id="bookings-container">
+            <p style="color: #64748b;">У вас поки немає активних записів.</p>
+        </div>
+    </div>
+
+    <!-- TAB 3: TEACHER VIEW -->
+    <div id="teacher-view" class="content-section">
+        <h2>Керування розкладом та додавання слотів</h2>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
+            <h3 style="font-size: 16px; margin-bottom: 15px; color: #1e293b;">Створити новий слот</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Дата та час</label>
+                    <input type="text" id="new-slot-time" placeholder="напр. 12 Червня, 14:00">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Викладач / Тема</label>
+                    <input type="text" id="new-slot-info" placeholder="напр. Доц. Шевченко І.В.">
+                </div>
+            </div>
+            <button class="btn" onclick="addSlot()">Додати слот у розклад</button>
+        </div>
+        <h2>Усі слоти системи</h2>
+        <div class="slots-grid" id="teacher-slots-container"></div>
+    </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div id="booking-modal" class="modal">
+    <div class="modal-content">
+        <h2>Підтвердження запису</h2>
+        <p id="modal-slot-desc" style="margin-bottom: 15px; color: #64748b;"></p>
+        <div class="form-group">
+            <label>Ваше ПІБ (Студент)</label>
+            <input type="text" id="student-name-input" placeholder="Петренко Олександр">
+        </div>
+        <div class="form-group">
+            <label>Номер групи</label>
+            <input type="text" id="student-group-input" placeholder="КН-31">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn" style="background: #10b981; flex: 1;" onclick="confirmBooking()">Підтвердити</button>
+            <button class="btn" style="background: #64748b; flex: 1;" onclick="closeModal()">Скасувати</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let slots = [
+        { id: 1, datetime: "10 Червня, 10:00 - 10:30", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
+        { id: 2, datetime: "10 Червня, 10:30 - 11:00", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
+        { id: 3, datetime: "11 Червня, 12:00 - 12:30", teacher: "Доц. Шевченко І.В.", status: "booked", bookedBy: "Іванченко Д.", group: "ПІ-42" },
+        { id: 4, datetime: "12 Червня, 14:00 - 14:30", teacher: "Ст. викл. Мельник О.П.", status: "free", bookedBy: null, group: null }
+    ];
+
+    let selectedSlotId = null;
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        renderAll();
+    }
+
+    function renderAll() {
+        renderStudentSlots();
+        renderMyBookings();
+        renderTeacherSlots();
+    }
+
+    function renderStudentSlots() {
+        const container = document.getElementById('slots-container');
+        container.innerHTML = '';
+        
+        const freeSlots = slots.filter(s => s.status === 'free');
+        if (freeSlots.length === 0) {
+            container.innerHTML = '<p style="color: #64748b;">Наразі немає вільних слотів для запису.</p>';
+            return;
+        }
+
+        freeSlots.forEach(slot => {
+            container.innerHTML += `
+                <div class="slot-card">
+                    <div class="slot-info">
+                        <h3>${slot.datetime}</h3>
+                        <p><i class="fa-solid fa-chalkboard-user"></i> ${slot.teacher}</p>
+                        <span class="badge free">Вільно</span>
+                    </div>
+                    <button class="btn" onclick="openModal(${slot.id})">Записатися</button>
+                </div>
+            `;
+        });
+    }
+
+    function renderMyBookings() {
+        const container = document.getElementById('bookings-container');
+        container.innerHTML = '';
+        
+        const bookedSlots = slots.filter(s => s.status === 'booked' && s.bookedBy);
+        if (bookedSlots.length === 0) {
+            container.innerHTML = '<p style="color: #64748b;">У системі поки немає активних записів.</p>';
+            return;
+        }
+
+        bookedSlots.forEach(slot => {
+            container.innerHTML += `
+                <div class="slot-card" style="border-left: 4px solid #4f46e5;">
+                    <div class="slot-info">
+                        <h3>${slot.datetime}</h3>
+                        <p><strong>Викладач:</strong> ${slot.teacher}</p>
+                        <p><strong>Студент:</strong> ${slot.bookedBy} (${slot.group})</p>
+                        <span class="badge booked">Заброньовано</span>
+                    </div>
+                    <button class="btn" style="background: #ef4444;" onclick="cancelBooking(${slot.id})">Скасувати запис</button>
+                </div>
+            `;
+        });
+    }
+
+    function renderTeacherSlots() {
+        const container = document.getElementById('teacher-slots-container');
+        container.innerHTML = '';
+
+        slots.forEach(slot => {
+            const isBooked = slot.status === 'booked';
+            container.innerHTML += `
+                <div class="slot-card">
+                    <div class="slot-info">
+                        <h3>${slot.datetime}</h3>
+                        <p>${slot.teacher}</p>
+                        <span class="badge ${isBooked ? 'booked' : 'free'}">${isBooked ? 'Зайнято: ' + slot.bookedBy : 'Вільний слот'}</span>
+                    </div>
+                    <button class="btn" style="background: #64748b;" onclick="deleteSlot(${slot.id})">Видалити слот</button>
+                </div>
+            `;
+        });
+    }
+
+    function openModal(id) {
+        selectedSlotId = id;
+        const slot = slots.find(s => s.id === id);
+        document.getElementById('modal-slot-desc').innerText = `${slot.datetime} (${slot.teacher})`;
+        document.getElementById('booking-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('booking-modal').style.display = 'none';
+        selectedSlotId = null;
+    }
+
+    function confirmBooking() {
+        const name = document.getElementById('student-name-input').value.trim();
+        const group = document.getElementById('student-group-input').value.trim();
+
+        if (!name || !group) {
+            alert('Будь ласка, заповніть усі поля!');
+            return;
+        }
+
+        const slot = slots.find(s => s.id === selectedSlotId);
+        if (slot && slot.status === 'free') {
+            slot.status = 'booked';
+            slot.bookedBy = name;
+            slot.group = group;
+            
+            closeModal();
+            showAlert('Успішно! Ви записалися на консультацію.', 'success');
+            renderAll();
+        } else {
+            alert('Помилка: цей слот вже зайнятий іншим користувачем!');
+            closeModal();
+            renderAll();
+        }
+    }
+
+    function cancelBooking(id) {
+        const slot = slots.find(s => s.id === id);
+        if (slot) {
+            slot.status = 'free';
+            slot.bookedBy = null;
+            slot.group = null;
+            showAlert('Запис успішно скасовано.', 'success');
+            renderAll();
+        }
+    }
+
+    function addSlot() {
+        const datetime = document.getElementById('new-slot-time').value.trim();
+        const teacher = document.getElementById('new-slot-info').value.trim();
+
+        if (!datetime || !teacher) {
+            alert('Заповніть час та ім’я викладача!');
+            return;
+        }
+
+        const newId = slots.length > 0 ? Math.max(...slots.map(s => s.id)) + 1 : 1;
+        slots.push({ id: newId, datetime, teacher, status: 'free', bookedBy: null, group: null });
+        
+        document.getElementById('new-slot-time').value = '';
+        document.getElementById('new-slot-info').value = '';
+        renderAll();
+        alert('Новий слот успішно додано до розкладу!');
+    }
+
+    function deleteSlot(id) {
+        slots = slots.filter(s => s.id !== id);
+        renderAll();
+    }
+
+    function showAlert(msg, type) {
+        const alertBox = document.getElementById('student-alert');
+        alertBox.innerText = msg;
+        alertBox.className = `alert ${type}`;
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 4000);
+    }
+
+    renderAll();
+</script>
+
+</body>
+</html>
