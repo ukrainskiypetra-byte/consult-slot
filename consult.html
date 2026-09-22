@@ -227,7 +227,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Дата проведення</label>
-                    <input type="date" id="new-slot-date" value="2026-09-10">
+                    <input type="date" id="new-slot-date">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Час та викладач</label>
@@ -268,12 +268,31 @@
 </div>
 
 <script>
-    // Початкові слоти на вересень 2026 року
+    // Допоміжна функція для отримання форматованої дати відносно сьогоднішнього дня
+    function getDynamicDateString(daysOffset) {
+        const d = new Date();
+        d.setDate(d.getDate() + daysOffset);
+        return d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    // Встановлюємо сьогоднішню дату в поле input type="date" за замовчуванням
+    function initDefaultDateInput() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const dateInput = document.getElementById('new-slot-date');
+        if (dateInput) {
+            dateInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+    }
+
+    // Динамічні початкові слоти (сьогодні, завтра, післязавтра)
     let slots = [
-        { id: 1, datetime: "10 Вересня 2026, 10:00 - 10:30", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
-        { id: 2, datetime: "10 Вересня 2026, 10:30 - 11:00", teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
-        { id: 3, datetime: "11 Вересня 2026, 12:00 - 12:30", teacher: "Доц. Шевченко І.В.", status: "booked", bookedBy: "Іванченко Д.", group: "3ІПЗс-24" },
-        { id: 4, datetime: "12 Вересня 2026, 14:00 - 14:30", teacher: "Ст. викл. Мельник О.П.", status: "free", bookedBy: null, group: null }
+        { id: 1, datetime: `${getDynamicDateString(0)}, 10:00 - 10:30`, teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
+        { id: 2, datetime: `${getDynamicDateString(0)}, 10:30 - 11:00`, teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
+        { id: 3, datetime: `${getDynamicDateString(1)}, 12:00 - 12:30`, teacher: "Доц. Шевченко І.В.", status: "booked", bookedBy: "Іванченко Д.", group: "3ІПЗс-24" },
+        { id: 4, datetime: `${getDynamicDateString(2)}, 14:00 - 14:30`, teacher: "Ст. викл. Мельник О.П.", status: "free", bookedBy: null, group: null }
     ];
 
     let selectedSlotId = null;
@@ -445,6 +464,7 @@
         }, 4000);
     }
 
+    initDefaultDateInput();
     renderAll();
 </script>
 
