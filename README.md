@@ -4,6 +4,12 @@
   <img src="https://img.shields.io/badge/License-MIT-orange?style=for-the-badge" alt="License">
 </p>
 
+<p align="center">
+  <a href="https://raw.githack.com/ukrainskiypetra-byte/consult-slot/main/src/consult.html" target="_blank">
+    <img src="https://img.shields.io/badge/🚀_ВІДКРИТИ-CONSULTSLOT_APP-2563eb?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Launch App" height="40">
+  </a>
+</p>
+
 <h1 align="center">📅 ConsultSlot</h1>
 <h3 align="center">Інтерактивна система запису на академічні консультації</h3>
 
