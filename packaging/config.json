@@ -1,0 +1,9 @@
+{
+  "appName": "ConsultSlot",
+  "version": "1.0.0",
+  "author": "Український Петро Анатолійович",
+  "stream": "4ІПЗ-23; 3ІПЗс-24",
+  "mainFile": "src/consult.html",
+  "targetPlatform": "web-spa",
+  "storageEngine": "localStorage"
+}
