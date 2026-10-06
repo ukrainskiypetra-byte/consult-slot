@@ -3,470 +3,771 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConsultSlot - Система запису на консультації</title>
+    <title>ConsultSlot - Розклад консультацій (4ІПЗ-23; 3ІПЗс-24)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f1f5f9;
+            --bg-surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background-color: #f1f5f9;
-            font-family: 'Lato', sans-serif;
-            color: #334155;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--bg-body);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-main);
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
-        .app-container {
+
+        .container {
             width: 100%;
-            max-width: 1100px;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            max-width: 1200px;
+            background: var(--bg-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
             overflow: hidden;
+            min-height: 700px;
             display: flex;
             flex-direction: column;
-            min-height: 650px;
+            margin-top: 2vh;
         }
+
+        /* Шапка */
         header {
-            background: #4f46e5;
+            background: var(--primary);
             color: white;
-            padding: 20px 30px;
+            padding: 24px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
-        header h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
+
+        .header-title h1 {
+            font-size: 22px;
             font-weight: 700;
-        }
-        header p {
-            font-size: 14px;
-            color: #c7d2fe;
-        }
-        .nav-tabs {
+            margin-bottom: 4px;
             display: flex;
-            background: #e0e7ff;
-            padding: 0 30px;
+            align-items: center;
             gap: 10px;
         }
-        .tab-btn {
+        .header-title p {
+            font-size: 14px;
+            color: #bfdbfe;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 16px 6px 6px;
+            border-radius: 30px;
+        }
+
+        .avatar {
+            width: 32px; height: 32px;
+            background: white;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 13px;
+        }
+
+        .user-info { font-size: 13px; }
+        .user-info strong { display: block; }
+        .user-info span { font-size: 11px; color: #bfdbfe; }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(255, 255, 255, 0.25); }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            gap: 4px;
+        }
+
+        .tab {
             background: transparent;
             border: none;
-            padding: 15px 20px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px;
+            padding: 16px 20px;
+            font-size: 14px;
             font-weight: 600;
-            color: #4338ca;
+            color: var(--text-muted);
             cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-family: inherit;
         }
-        .tab-btn.active {
-            border-bottom: 3px solid #4f46e5;
-            background: #ffffff;
+        .tab:hover { color: var(--primary); }
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
         }
-        .content-section {
-            padding: 30px;
+
+        /* Контент */
+        .content {
+            padding: 32px;
             flex-grow: 1;
             display: none;
         }
-        .content-section.active {
-            display: block;
+        .content.active { display: block; animation: fadeIn 0.2s; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h2.section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-main);
         }
-        h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 22px;
-            color: #1e293b;
-            margin-bottom: 20px;
+
+        /* Фільтри */
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
         }
-        .slots-grid {
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        .search-box i {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+        }
+        .search-box input, select.filter-select {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text-main);
+        }
+        select.filter-select { padding-left: 14px; width: auto; min-width: 200px; }
+        .search-box input:focus, select.filter-select:focus { outline: none; border-color: var(--primary); }
+
+        /* Сітка карток */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
-        .slot-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 20px;
+            background: white;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s;
+            transition: box-shadow 0.2s, border-color 0.2s;
         }
-        .slot-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
         }
-        .slot-info h3 {
-            font-size: 18px;
-            color: #1e293b;
-            margin-bottom: 8px;
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
-        .slot-info p {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 5px;
+
+        .tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 10px;
-        }
-        .badge.free { background: #dcfce7; color: #166534; }
-        .badge.booked { background: #fee2e2; color: #991b1b; }
+        .tag-subject { background: #f1f5f9; color: #475569; }
         
+        .status {
+            font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px;
+        }
+        .status.free { color: var(--success); }
+        .status.booked { color: var(--danger); }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .card-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .card-info div { display: flex; align-items: center; gap: 8px; }
+        .card-info i { width: 16px; text-align: center; color: #94a3b8; }
+        .card-info strong { color: var(--text-main); font-weight: 500; }
+
+        .time-badge {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Кнопки */
         .btn {
-            background: #4f46e5;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 10px 16px;
             border-radius: 6px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: 15px;
-            font-family: 'Lato', sans-serif;
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit;
             transition: background 0.2s;
         }
-        .btn:hover { background: #4338ca; }
-        .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-        
-        .form-group {
-            margin-bottom: 15px;
+        .btn:hover { background: var(--primary-hover); }
+        .btn-outline {
+            background: transparent; color: var(--text-main); border: 1px solid var(--border);
         }
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: #334155;
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-danger { background: white; color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger:hover { background: #fef2f2; }
+
+        /* Екран входу */
+        #auth-screen {
+            max-width: 400px;
+            margin: 60px auto;
+            background: white;
+            padding: 40px 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            text-align: center;
         }
+
+        .form-group { text-align: left; margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
         .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 15px;
-            background: #fff;
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
+
+        /* Панель адміністратора */
+        .admin-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .time-selector {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+        }
+        .time-pill {
+            padding: 8px 12px; background: white; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;
+        }
+        .time-pill.selected { background: #eff6ff; border-color: var(--primary); color: var(--primary); font-weight: 500; }
+
+        /* Модальне вікно */
+        .modal-bg {
+            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
         }
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 400px;
-            max-width: 90%;
+            background: white; width: 100%; max-width: 420px; padding: 32px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .alert {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
+
+        /* Сповіщення (Toast) */
+        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: white; border-left: 4px solid var(--primary); padding: 16px 20px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s;
         }
-        .alert.success { background: #dcfce7; color: #166534; display: block; }
-        .alert.error { background: #fee2e2; color: #991b1b; display: block; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header>
-        <div>
-            <h1>ConsultSlot MVP</h1>
-            <p>Система швидкого запису на консультації до викладачів</p>
+<div class="container">
+    <!-- Шапка застосунку -->
+    <header id="app-header" style="display: none;">
+        <div class="header-title">
+            <h1><i class="fa-solid fa-calendar-check"></i> ConsultSlot</h1>
+            <p>Запис на 30-хв консультації (4ІПЗ-23; 3ІПЗс-24)</p>
         </div>
-        <div>
-            <span id="current-user-role" style="font-size: 13px; background: #4338ca; padding: 5px 10px; border-radius: 4px;">Група: 3ІПЗс-24</span>
+        <div class="header-actions">
+            <div class="user-profile">
+                <div class="avatar" id="header-avatar">СТ</div>
+                <div class="user-info">
+                    <strong id="header-name">Студент</strong>
+                    <span id="header-group">Група</span>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Вийти</button>
         </div>
     </header>
 
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('student-view')"><i class="fa-solid fa-calendar-days"></i> Доступні слоти</button>
-        <button class="tab-btn" onclick="switchTab('my-bookings')"><i class="fa-solid fa-user-check"></i> Мої записи</button>
-        <button class="tab-btn" onclick="switchTab('teacher-view')"><i class="fa-solid fa-chalkboard-user"></i> Панель викладача</button>
-    </div>
-
-    <!-- TAB 1: STUDENT VIEW -->
-    <div id="student-view" class="content-section active">
-        <h2>Оберіть вільний час для консультації</h2>
-        <div id="student-alert" class="alert"></div>
-        <div class="slots-grid" id="slots-container">
-            <!-- Динамічний контент -->
-        </div>
-    </div>
-
-    <!-- TAB 2: MY BOOKINGS -->
-    <div id="my-bookings" class="content-section">
-        <h2>Ваші активні записи</h2>
-        <div class="slots-grid" id="bookings-container">
-            <p style="color: #64748b;">У вас поки немає активних записів.</p>
-        </div>
-    </div>
-
-    <!-- TAB 3: TEACHER VIEW -->
-    <div id="teacher-view" class="content-section">
-        <h2>Керування розкладом та додавання слотів</h2>
-        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
-            <h3 style="font-size: 16px; margin-bottom: 15px; color: #1e293b;">Створити новий слот</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Дата проведення</label>
-                    <input type="date" id="new-slot-date">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Час та викладач</label>
-                    <input type="text" id="new-slot-info" placeholder="14:00 - 14:30 (Доц. Шевченко)">
-                </div>
-            </div>
-            <button class="btn" onclick="addSlot()">Додати слот у розклад</button>
-        </div>
-        <h2>Усі слоти системи</h2>
-        <div class="slots-grid" id="teacher-slots-container"></div>
-    </div>
-</div>
-
-<!-- BOOKING MODAL -->
-<div id="booking-modal" class="modal">
-    <div class="modal-content">
-        <h2>Підтвердження запису</h2>
-        <p id="modal-slot-desc" style="margin-bottom: 15px; color: #64748b;"></p>
+    <!-- Екран авторизації -->
+    <div id="auth-screen">
+        <i class="fa-solid fa-graduation-cap" style="font-size: 48px; color: var(--primary); margin-bottom: 20px;"></i>
+        <h2 style="font-size: 22px; margin-bottom: 8px;">Вхід у систему</h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">Введіть дані для запису на консультації</p>
+        
         <div class="form-group">
-            <label>Ваше ПІБ (Студент)</label>
-            <input type="text" id="student-name-input" placeholder="Введіть ПІБ" autocomplete="name">
+            <label>ПІБ студента</label>
+            <input type="text" id="login-name" placeholder="Наприклад: Іваненко Іван">
         </div>
-        <div class="form-group">
-            <label>Номер групи</label>
-            <select id="student-group-input">
-                <option value="3ІПЗс-24" selected>3ІПЗс-24 (Ваша група)</option>
-                <option value="КН-31">КН-31</option>
-                <option value="ПІ-41">ПІ-41</option>
-                <option value="ІТ-32">ІТ-32</option>
-                <option value="КН-32с">КН-32с</option>
+        <div class="form-group" style="margin-bottom: 24px;">
+            <label>Академічна група</label>
+            <select id="login-group">
+                <option value="3ІПЗс-24">3ІПЗс-24</option>
+                <option value="4ІПЗ-23">4ІПЗ-23</option>
+                <option value="4Ш-23">4Ш-23</option>
+                <option value="3Шс-24">3Шс-24</option>
             </select>
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn" style="background: #10b981; flex: 1;" onclick="confirmBooking()">Підтвердити</button>
-            <button class="btn" style="background: #64748b; flex: 1;" onclick="closeModal()">Скасувати</button>
+        <button class="btn" onclick="login()">Увійти</button>
+    </div>
+
+    <!-- Основний контент -->
+    <div id="app-content" style="display: none; flex-direction: column; flex-grow: 1;">
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('tab-slots', this)"><i class="fa-regular fa-clock"></i> Доступні слоти</button>
+            <button class="tab" onclick="switchTab('tab-my', this)"><i class="fa-regular fa-bookmark"></i> Мої записи</button>
+            <button class="tab" onclick="switchTab('tab-admin', this)"><i class="fa-solid fa-chalkboard-user"></i> Панель викладача</button>
+        </div>
+
+        <!-- Вкладка 1: Доступні слоти -->
+        <div id="tab-slots" class="content active">
+            <h2 class="section-title">Оберіть час консультації</h2>
+            
+            <div class="filters">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Пошук за предметом чи викладачем..." oninput="renderSlots()">
+                </div>
+                <select class="filter-select" id="teacher-filter" onchange="renderSlots()">
+                    <option value="ALL">Усі викладачі</option>
+                    <option value="Бункус С.В.">Бункус С.В.</option>
+                    <option value="Косенко І.О.">Косенко І.О.</option>
+                    <option value="Чорний Д.О., Костевич І.В.">Чорний Д.О., Костевич І.В.</option>
+                    <option value="Лозовська Т.І.">Лозовська Т.І.</option>
+                    <option value="Макаревич І.С.">Макаревич І.С.</option>
+                </select>
+            </div>
+
+            <div class="grid" id="grid-available"></div>
+        </div>
+
+        <!-- Вкладка 2: Мої записи -->
+        <div id="tab-my" class="content">
+            <h2 class="section-title">Ваші активні записи</h2>
+            <div class="grid" id="grid-my"></div>
+        </div>
+
+        <!-- Вкладка 3: Панель викладача -->
+        <div id="tab-admin" class="content">
+            <div class="admin-box">
+                <h2 style="font-size: 16px; margin-bottom: 16px;"><i class="fa-solid fa-plus"></i> Створити нове вікно (30 хв)</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label>Дата</label>
+                        <input type="date" id="admin-date">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>Дисципліна</label>
+                        <select id="admin-subject" onchange="syncTeacher()">
+                            <option value="Дискретна математика">Дискретна математика</option>
+                            <option value="Математичні методи дослідження операцій">Математичні методи дослідження операцій</option>
+                            <option value="Конструювання програмного забезпечення">Конструювання програмного забезпечення</option>
+                            <option value="Проєктний практикум">Проєктний практикум</option>
+                            <option value="Організація комп'ютерних мереж">Організація комп'ютерних мереж</option>
+                            <option value="Філософія (Основи філософських знань)">Філософія (Основи філософських знань)</option>
+                            <option value="Групова динаміка та комунікації">Групова динаміка та комунікації</option>
+                            <option value="Іноземна мова за професійним спрямуванням">Іноземна мова за професійним спрямуванням</option>
+                            <option value="Класна година">Класна година (куратор)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>Викладач</label>
+                        <input type="text" id="admin-teacher" readonly style="background: #f1f5f9;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Час проведення (поза парами)</label>
+                    <div class="time-selector">
+                        <span class="time-pill" onclick="selectTime(this, '08:00 - 08:30 (До пар)')">08:00 - 08:30</span>
+                        <span class="time-pill selected" onclick="selectTime(this, '11:20 - 11:50 (Велика перерва)')">11:20 - 11:50</span>
+                        <span class="time-pill" onclick="selectTime(this, '14:45 - 15:15 (Після 4-ї пари)')">14:45 - 15:15</span>
+                        <span class="time-pill" onclick="selectTime(this, '15:15 - 15:45 (Після пар)')">15:15 - 15:45</span>
+                        <span class="time-pill" onclick="selectTime(this, '15:45 - 16:15 (Після пар)')">15:45 - 16:15</span>
+                        <span class="time-pill" onclick="selectTime(this, '16:15 - 16:45 (Вечір)')">16:15 - 16:45</span>
+                        <span class="time-pill" onclick="selectTime(this, '16:45 - 17:15 (Вечір)')">16:45 - 17:15</span>
+                    </div>
+                    <input type="hidden" id="admin-time" value="11:20 - 11:50 (Велика перерва)">
+                </div>
+
+                <button class="btn" style="width: auto;" onclick="addSlot()">Додати слот у розклад</button>
+            </div>
+
+            <h2 class="section-title">Усі слоти системи</h2>
+            <div class="grid" id="grid-admin"></div>
         </div>
     </div>
 </div>
 
+<!-- Модальне вікно бронювання -->
+<div class="modal-bg" id="modal">
+    <div class="modal-content">
+        <h2 style="font-size: 20px; margin-bottom: 12px;">Запис на консультацію</h2>
+        <div id="modal-desc" style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; padding: 12px; background: #f8fafc; border-radius: 6px;"></div>
+        
+        <div class="form-group">
+            <label>Ваше ПІБ</label>
+            <input type="text" id="modal-name">
+        </div>
+        <div class="form-group">
+            <label>Академічна група</label>
+            <select id="modal-group">
+                <option value="3ІПЗс-24">3ІПЗс-24</option>
+                <option value="4ІПЗ-23">4ІПЗ-23</option>
+                <option value="4Ш-23">4Ш-23</option>
+                <option value="3Шс-24">3Шс-24</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+            <label>Тема питання (необов'язково)</label>
+            <input type="text" id="modal-topic" placeholder="Напр. Перездача лабораторної">
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button class="btn" style="flex: 1;" onclick="confirmBooking()">Записатися</button>
+            <button class="btn btn-outline" style="flex: 1;" onclick="closeModal()">Скасувати</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
 <script>
-    // Допоміжна функція для отримання форматованої дати відносно сьогоднішнього дня
-    function getDynamicDateString(daysOffset) {
-        const d = new Date();
-        d.setDate(d.getDate() + daysOffset);
-        return d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+    // Запобіжник для очищення старого кешу від минулих дизайнів
+    if (!localStorage.getItem('classic_version_cleared_v2')) {
+        localStorage.removeItem('consultslot_user');
+        localStorage.setItem('classic_version_cleared_v2', 'true');
     }
 
-    // Встановлюємо сьогоднішню дату в поле input type="date" за замовчуванням
-    function initDefaultDateInput() {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const dateInput = document.getElementById('new-slot-date');
-        if (dateInput) {
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
-        }
+    let user = null;
+    let selectedId = null;
+
+    // База предметів
+    const DB = {
+        "Дискретна математика": { teacher: "Бункус С.В.", cat: "Математика" },
+        "Математичні методи дослідження операцій": { teacher: "Бункус С.В.", cat: "Аналітика" },
+        "Конструювання програмного забезпечення": { teacher: "Косенко І.О.", cat: "Інженерія" },
+        "Класна година": { teacher: "Косенко І.О.", cat: "Куратор" },
+        "Проєктний практикум": { teacher: "Чорний Д.О., Костевич І.В.", cat: "Проєкти" },
+        "Організація комп'ютерних мереж": { teacher: "Чорний Д.О., Костевич І.В.", cat: "Мережі" },
+        "Філософія (Основи філософських знань)": { teacher: "Лозовська Т.І.", cat: "Гуманітарні" },
+        "Групова динаміка та комунікації": { teacher: "Лозовська Т.І.", cat: "Soft Skills" },
+        "Іноземна мова за професійним спрямуванням": { teacher: "Макаревич І.С.", cat: "Мови" }
+    };
+
+    function getDateStr(offset) {
+        const d = new Date(); d.setDate(d.getDate() + offset);
+        return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
-    // Динамічні початкові слоти (сьогодні, завтра, післязавтра)
+    // Дані слотів
     let slots = [
-        { id: 1, datetime: `${getDynamicDateString(0)}, 10:00 - 10:30`, teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
-        { id: 2, datetime: `${getDynamicDateString(0)}, 10:30 - 11:00`, teacher: "Проф. Ковальчук В.М.", status: "free", bookedBy: null, group: null },
-        { id: 3, datetime: `${getDynamicDateString(1)}, 12:00 - 12:30`, teacher: "Доц. Шевченко І.В.", status: "booked", bookedBy: "Іванченко Д.", group: "3ІПЗс-24" },
-        { id: 4, datetime: `${getDynamicDateString(2)}, 14:00 - 14:30`, teacher: "Ст. викл. Мельник О.П.", status: "free", bookedBy: null, group: null }
+        { id: 1, date: getDateStr(0), time: "11:20 - 11:50 (Велика перерва)", subject: "Дискретна математика", teacher: "Бункус С.В.", status: "free", bookedBy: null, group: null, topic: null },
+        { id: 2, date: getDateStr(0), time: "14:45 - 15:15 (Після 4-ї пари)", subject: "Конструювання програмного забезпечення", teacher: "Косенко І.О.", status: "free", bookedBy: null, group: null, topic: null },
+        { id: 3, date: getDateStr(1), time: "14:45 - 15:15 (Після 4-ї пари)", subject: "Проєктний практикум", teacher: "Чорний Д.О., Костевич І.В.", status: "booked", bookedBy: "Український П.А.", group: "3ІПЗс-24", topic: "Захист роботи" },
+        { id: 4, date: getDateStr(1), time: "08:00 - 08:30 (До пар)", subject: "Філософія (Основи філософських знань)", teacher: "Лозовська Т.І.", status: "free", bookedBy: null, group: null, topic: null },
+        { id: 5, date: getDateStr(2), time: "11:20 - 11:50 (Велика перерва)", subject: "Організація комп'ютерних мереж", teacher: "Чорний Д.О., Костевич І.В.", status: "free", bookedBy: null, group: null, topic: null }
     ];
 
-    let selectedSlotId = null;
-
-    function switchTab(tabId) {
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        renderAll();
+    // Утиліти
+    function showToast(msg) {
+        const box = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 18px;"></i> ${msg}`;
+        box.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
     }
 
-    function renderAll() {
-        renderStudentSlots();
-        renderMyBookings();
-        renderTeacherSlots();
+    function syncTeacher() {
+        const subj = document.getElementById('admin-subject').value;
+        document.getElementById('admin-teacher').value = DB[subj] ? DB[subj].teacher : '';
     }
 
-    function renderStudentSlots() {
-        const container = document.getElementById('slots-container');
-        container.innerHTML = '';
-        
-        const freeSlots = slots.filter(s => s.status === 'free');
-        if (freeSlots.length === 0) {
-            container.innerHTML = '<p style="color: #64748b;">Наразі немає вільних слотів для запису.</p>';
-            return;
+    function selectTime(el, time) {
+        document.querySelectorAll('.time-pill').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('admin-time').value = time;
+    }
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        render();
+    }
+
+    // Авторизація
+    function checkAuth() {
+        const raw = localStorage.getItem('consultslot_user');
+        if (raw) {
+            user = JSON.parse(raw);
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-header').style.display = 'flex';
+            document.getElementById('app-content').style.display = 'flex';
+            
+            document.getElementById('header-name').innerText = user.name;
+            document.getElementById('header-group').innerText = user.group;
+            document.getElementById('header-avatar').innerText = user.name.substring(0,2).toUpperCase();
+            render();
+        } else {
+            user = null;
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('app-header').style.display = 'none';
+            document.getElementById('app-content').style.display = 'none';
         }
-
-        freeSlots.forEach(slot => {
-            container.innerHTML += `
-                <div class="slot-card">
-                    <div class="slot-info">
-                        <h3><i class="fa-regular fa-clock"></i> ${slot.datetime}</h3>
-                        <p><i class="fa-solid fa-chalkboard-user"></i> ${slot.teacher}</p>
-                        <span class="badge free">Вільно</span>
-                    </div>
-                    <button class="btn" onclick="openModal(${slot.id})">Записатися</button>
-                </div>
-            `;
-        });
     }
 
-    function renderMyBookings() {
-        const container = document.getElementById('bookings-container');
-        container.innerHTML = '';
+    function login() {
+        const name = document.getElementById('login-name').value.trim();
+        const group = document.getElementById('login-group').value;
+        if (!name) return alert('Введіть ПІБ!');
+        localStorage.setItem('consultslot_user', JSON.stringify({ name, group }));
+        checkAuth();
+    }
+
+    function logout() {
+        localStorage.removeItem('consultslot_user');
+        checkAuth();
+    }
+
+    // Рендер
+    function render() {
+        renderSlots();
+        renderMy();
+        renderAdmin();
+    }
+
+    function renderSlots() {
+        const grid = document.getElementById('grid-available');
+        const q = document.getElementById('search-input').value.toLowerCase();
+        const tFilter = document.getElementById('teacher-filter').value;
         
-        const bookedSlots = slots.filter(s => s.status === 'booked' && s.bookedBy);
-        if (bookedSlots.length === 0) {
-            container.innerHTML = '<p style="color: #64748b;">У системі поки немає активних записів.</p>';
-            return;
-        }
+        grid.innerHTML = '';
 
-        bookedSlots.forEach(slot => {
-            container.innerHTML += `
-                <div class="slot-card" style="border-left: 4px solid #4f46e5;">
-                    <div class="slot-info">
-                        <h3>${slot.datetime}</h3>
-                        <p><strong>Викладач:</strong> ${slot.teacher}</p>
-                        <p><strong>Студент:</strong> ${slot.bookedBy} (${slot.group})</p>
-                        <span class="badge booked">Заброньовано</span>
+        let list = slots.filter(s => s.status === 'free');
+        if (tFilter !== 'ALL') list = list.filter(s => s.teacher === tFilter);
+        if (q) list = list.filter(s => s.subject.toLowerCase().includes(q) || s.teacher.toLowerCase().includes(q));
+
+        if (!list.length) return grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center;">Немає вільних слотів за вашим запитом.</p>`;
+
+        list.forEach(s => {
+            const cat = DB[s.subject] ? DB[s.subject].cat : 'Дисципліна';
+            grid.innerHTML += `
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <span class="tag tag-subject">${cat}</span>
+                            <span class="status free"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Вільно</span>
+                        </div>
+                        <div class="card-title">${s.subject}</div>
+                        <div class="card-info">
+                            <div><i class="fa-solid fa-chalkboard-user"></i> <strong>${s.teacher}</strong></div>
+                            <div><i class="fa-regular fa-calendar"></i> ${s.date}</div>
+                            <div><i class="fa-regular fa-clock"></i> <span class="time-badge">${s.time}</span></div>
+                        </div>
                     </div>
-                    <button class="btn" style="background: #ef4444;" onclick="cancelBooking(${slot.id})">Скасувати запис</button>
+                    <button class="btn" onclick="openModal(${s.id})">Записатися</button>
                 </div>
             `;
         });
     }
 
-    function renderTeacherSlots() {
-        const container = document.getElementById('teacher-slots-container');
-        container.innerHTML = '';
+    function renderMy() {
+        const grid = document.getElementById('grid-my');
+        grid.innerHTML = '';
+        const list = slots.filter(s => s.status === 'booked');
 
-        slots.forEach(slot => {
-            const isBooked = slot.status === 'booked';
-            container.innerHTML += `
-                <div class="slot-card">
-                    <div class="slot-info">
-                        <h3>${slot.datetime}</h3>
-                        <p>${slot.teacher}</p>
-                        <span class="badge ${isBooked ? 'booked' : 'free'}">${isBooked ? 'Зайнято: ' + slot.bookedBy : 'Вільний слот'}</span>
+        if (!list.length) return grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center;">Ви ще не маєте записів.</p>`;
+
+        list.forEach(s => {
+            const cat = DB[s.subject] ? DB[s.subject].cat : 'Дисципліна';
+            const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Консультація: ' + s.subject)}&details=${encodeURIComponent(s.teacher)}`;
+            
+            grid.innerHTML += `
+                <div class="card" style="border-left: 4px solid var(--primary);">
+                    <div>
+                        <div class="card-header">
+                            <span class="tag tag-subject">${cat}</span>
+                            <span class="status booked"><i class="fa-solid fa-check"></i> Заброньовано</span>
+                        </div>
+                        <div class="card-title">${s.subject}</div>
+                        <div class="card-info">
+                            <div><i class="fa-solid fa-chalkboard-user"></i> <strong>${s.teacher}</strong></div>
+                            <div><i class="fa-solid fa-user"></i> ${s.bookedBy} (${s.group})</div>
+                            <div><i class="fa-regular fa-calendar"></i> ${s.date}</div>
+                            <div><i class="fa-regular fa-clock"></i> <span class="time-badge">${s.time}</span></div>
+                            ${s.topic ? `<div><i class="fa-regular fa-comment"></i> ${s.topic}</div>` : ''}
+                        </div>
                     </div>
-                    <button class="btn" style="background: #64748b;" onclick="deleteSlot(${slot.id})">Видалити слот</button>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="${calUrl}" target="_blank" class="btn btn-outline" style="flex: 1; text-decoration: none; text-align: center; font-size: 13px;"><i class="fa-brands fa-google"></i> Календар</a>
+                        <button class="btn btn-danger" style="flex: 1; font-size: 13px;" onclick="cancel(${s.id})">Скасувати</button>
+                    </div>
                 </div>
             `;
         });
     }
 
+    function renderAdmin() {
+        const grid = document.getElementById('grid-admin');
+        grid.innerHTML = '';
+
+        slots.forEach(s => {
+            const isB = s.status === 'booked';
+            grid.innerHTML += `
+                <div class="card" style="background: ${isB ? '#fafafa' : '#fff'}; border-color: ${isB ? '#e2e8f0' : '#cbd5e1'};">
+                    <div>
+                        <div class="card-header">
+                            <span class="status ${isB ? 'booked' : 'free'}">${isB ? 'Зайнято' : 'Вільно'}</span>
+                        </div>
+                        <div class="card-title" style="font-size: 15px;">${s.subject}</div>
+                        <div class="card-info">
+                            <div><i class="fa-solid fa-user"></i> ${s.teacher}</div>
+                            <div><i class="fa-regular fa-clock"></i> ${s.date} | ${s.time}</div>
+                            ${isB ? `<div style="color: var(--primary);"><strong>Студент:</strong> ${s.bookedBy} (${s.group})</div>` : ''}
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" onclick="removeSlot(${s.id})"><i class="fa-regular fa-trash-can"></i> Видалити слот</button>
+                </div>
+            `;
+        });
+    }
+
+    // Модальне вікно та дії
     function openModal(id) {
-        selectedSlotId = id;
-        const slot = slots.find(s => s.id === id);
-        document.getElementById('modal-slot-desc').innerText = `${slot.datetime} (${slot.teacher})`;
-        document.getElementById('booking-modal').style.display = 'flex';
+        selectedId = id;
+        const s = slots.find(x => x.id === id);
+        document.getElementById('modal-desc').innerHTML = `<strong>${s.subject}</strong><br>Викладач: ${s.teacher}<br>Час: ${s.date}, ${s.time}`;
+        if (user) {
+            document.getElementById('modal-name').value = user.name;
+            document.getElementById('modal-group').value = user.group;
+        }
+        document.getElementById('modal-topic').value = '';
+        document.getElementById('modal').style.display = 'flex';
     }
 
     function closeModal() {
-        document.getElementById('booking-modal').style.display = 'none';
-        selectedSlotId = null;
+        document.getElementById('modal').style.display = 'none';
+        selectedId = null;
     }
 
     function confirmBooking() {
-        const name = document.getElementById('student-name-input').value.trim();
-        const group = document.getElementById('student-group-input').value;
+        const name = document.getElementById('modal-name').value.trim();
+        const group = document.getElementById('modal-group').value;
+        const topic = document.getElementById('modal-topic').value.trim();
 
-        if (!name) {
-            alert('Будь ласка, введіть своє ПІБ!');
-            return;
-        }
+        if (!name) return alert('Вкажіть ПІБ!');
 
-        const slot = slots.find(s => s.id === selectedSlotId);
-        if (slot && slot.status === 'free') {
-            slot.status = 'booked';
-            slot.bookedBy = name;
-            slot.group = group;
-            
-            closeModal();
-            showAlert('Успішно! Ви записалися на консультацію.', 'success');
-            renderAll();
-        } else {
-            alert('Помилка: цей слот вже зайнятий іншим користувачем!');
-            closeModal();
-            renderAll();
+        const s = slots.find(x => x.id === selectedId);
+        if (s && s.status === 'free') {
+            s.status = 'booked'; s.bookedBy = name; s.group = group; s.topic = topic || null;
+            closeModal(); render();
+            showToast('Успішно записано на консультацію!');
         }
     }
 
-    function cancelBooking(id) {
-        const slot = slots.find(s => s.id === id);
-        if (slot) {
-            slot.status = 'free';
-            slot.bookedBy = null;
-            slot.group = null;
-            showAlert('Запис успішно скасовано.', 'success');
-            renderAll();
+    function cancel(id) {
+        const s = slots.find(x => x.id === id);
+        if (s) {
+            s.status = 'free'; s.bookedBy = null; s.group = null; s.topic = null;
+            render(); showToast('Запис скасовано');
         }
     }
 
     function addSlot() {
-        const dateVal = document.getElementById('new-slot-date').value;
-        const infoVal = document.getElementById('new-slot-info').value.trim();
+        const dateVal = document.getElementById('admin-date').value;
+        const subject = document.getElementById('admin-subject').value;
+        const teacher = document.getElementById('admin-teacher').value;
+        const time = document.getElementById('admin-time').value;
 
-        if (!dateVal || !infoVal) {
-            alert('Оберіть дату та введіть час/викладача!');
-            return;
-        }
-
-        const dateObj = new Date(dateVal);
-        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-        const formattedDate = dateObj.toLocaleDateString('uk-UA', options);
-
-        const datetime = `${formattedDate}, ${infoVal}`;
-        const newId = slots.length > 0 ? Math.max(...slots.map(s => s.id)) + 1 : 1;
+        if (!dateVal) return alert('Вкажіть дату!');
         
-        slots.push({ id: newId, datetime, teacher: "Викладач за розкладом", status: 'free', bookedBy: null, group: null });
-        
-        document.getElementById('new-slot-info').value = '';
-        renderAll();
-        alert('Новий слот успішно додано до розкладу!');
+        const d = new Date(dateVal).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        slots.push({
+            id: slots.length ? Math.max(...slots.map(x => x.id)) + 1 : 1,
+            date: d, time, subject, teacher, status: "free", bookedBy: null, group: null, topic: null
+        });
+        render(); showToast('Нове вікно консультації додано');
     }
 
-    function deleteSlot(id) {
-        slots = slots.filter(s => s.id !== id);
-        renderAll();
+    function removeSlot(id) {
+        slots = slots.filter(x => x.id !== id);
+        render(); showToast('Слот видалено');
     }
 
-    function showAlert(msg, type) {
-        const alertBox = document.getElementById('student-alert');
-        alertBox.innerText = msg;
-        alertBox.className = `alert ${type}`;
-        setTimeout(() => {
-            alertBox.style.display = 'none';
-        }, 4000);
-    }
-
-    initDefaultDateInput();
-    renderAll();
+    // Ініціалізація
+    document.getElementById('admin-date').value = new Date().toISOString().split('T')[0];
+    syncTeacher();
+    checkAuth();
 </script>
-
 </body>
 </html>
